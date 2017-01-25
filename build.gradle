@@ -2,13 +2,55 @@ group 'com.rameshl.demos'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'appengine'
 
-sourceCompatibility = 1.5
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+buildscript {
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.48'
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+
+    compileOnly 'javax.servlet:servlet-api:2.5'
+
+    appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.48'
+
     testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+
+appengine {
+    httpPort = 8080
+    downloadSdk = true
+
+    appcfg {
+        oauth2 = true
+    }
+    jvmFlags = ['-Xdebug',
+                '-agentlib:jdwp=transport=dt_socket,address=8079,server=y,suspend=n',
+                '-Dappengine.fullscan.seconds=3',
+                "-Ddatastore.backing_store=$projectDir/appengine-generated/local_db.bin",
+                "-Ddatastore.generated_dir=$projectDir/appengine-generated",
+                "-Dblobstore.backing_store=$projectDir/appengine-generated/blob"
+    ]
 }
